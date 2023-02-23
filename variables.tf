@@ -85,6 +85,12 @@ variable "resource_group_name" {
   description = "The Azure resource group where the resources will be provisioned."
 }
 
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = "A map of tags to apply to the resources."
+}
+
 variable "vm_size" {
   type        = string
   default     = "Standard_B1ms"
