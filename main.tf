@@ -1,16 +1,14 @@
 resource "azurerm_kubernetes_cluster" "aks" {
   count               = var.resource_count > 0 ? 1 : 0
-  name                = "${var.name}-${var.environment}-aks"
+  name                = "${var.environment}-${var.location}-${var.name}-aks"
   location            = var.location
   resource_group_name = var.resource_group_name
 
-  dns_prefix                   = var.dns_prefix
-  image_cleaner_enabled        = true
-  image_cleaner_interval_hours = 72
-  kubernetes_version           = var.kubernetes_version
-  oidc_issuer_enabled          = true
-  sku_tier                     = var.environment == "dev" ? "Free" : "Paid"
-  tags                         = var.tags
+  dns_prefix          = var.dns_prefix
+  kubernetes_version  = var.kubernetes_version
+  oidc_issuer_enabled = true
+  sku_tier            = var.environment == "dev" ? "Free" : "Paid"
+  tags                = var.tags
 
   azure_active_directory_role_based_access_control {
     managed                = true
@@ -28,8 +26,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   network_profile {
-    network_plugin = "none"
-    pod_cidr       = "192.168.0.0/16"
+    network_plugin      = "azure"
+    network_plugin_mode = "Overlay"
+    pod_cidr            = "192.168.0.0/16"
   }
 
   identity {

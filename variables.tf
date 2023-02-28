@@ -4,9 +4,9 @@ variable "additional_node_pools" {
     example = {
       max_node_count       = 4
       min_node_count       = 2
-      node_count           = 2
-      orchestrator_version = "1.25.0"
-      vm_size              = "Standard_B1ms"
+      node_count           = 1
+      orchestrator_version = "1.25.4"
+      vm_size              = "Standard_B2ms"
     }
   }
   description = "A map that describes the configuration for additional node pools."
@@ -47,7 +47,7 @@ variable "location" {
 
 variable "kubernetes_version" {
   type        = string
-  default     = "1.25.0"
+  default     = "1.25.4"
   description = "The version of Kubernetes."
 }
 
@@ -93,6 +93,6 @@ variable "tags" {
 
 variable "vm_size" {
   type        = string
-  default     = "Standard_B1ms"
+  default     = "Standard_B2ms"
   description = "The VM sku to use for the `default` node pool"
 }
