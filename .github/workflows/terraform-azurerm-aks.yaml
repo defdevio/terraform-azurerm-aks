@@ -21,7 +21,7 @@ jobs:
     - name: Init TFLint
       run: tflint --init
       env:
-        GITHUB_TOKEN: ${{ secrets.GO_TOKEN }}
+        GITHUB_TOKEN: ${{ github.token }}
 
     - name: Run TFLint
       run: tflint -f compact
@@ -69,6 +69,9 @@ jobs:
     - uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-    - name: Test module
-      run: |
-        go test -v -timeout 30m  
+    - name: Azure CLI script file
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.30.0
+        inlineScript: |
+          go test -v -timeout 30m  
