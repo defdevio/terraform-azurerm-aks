@@ -1,0 +1,73 @@
+on:
+  - pull_request
+jobs:
+  tflint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      name: Checkout source code
+
+    - uses: actions/cache@v3
+      name: Cache plugin dir
+      with:
+        path: ~/.tflint.d/plugins
+        key: ubuntu-latest-tflint-${{ hashFiles('.tflint.hcl') }}
+
+    - uses: terraform-linters/setup-tflint@v3
+      name: Setup TFLint
+      with:
+        tflint_version: v0.44.1
+
+    - name: Init TFLint
+      run: tflint --init
+      env:
+        GITHUB_TOKEN: ${{ secrets.GO_TOKEN }}
+
+    - name: Run TFLint
+      run: tflint -f compact
+  scan:
+    permissions:
+      contents: read
+      actions: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Checkov GitHub Action
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          output_format: cli
+          output_file_path: console
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.ref }}
+
+    - name: Render terraform docs inside the README.md and push changes back to PR branch
+      uses: terraform-docs/gh-actions@v1.0.0
+      with:
+        working-dir: .
+        output-file: README.md
+        output-method: inject
+        git-push: "true"
+  test:
+    name: Test terraform module with terratest
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.20
+      id: go
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - uses: azure/login@v1
+      with:
+        creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
+    - name: Test module
+      run: |
+        go test -v -timeout 30m  
