@@ -21,7 +21,7 @@ import (
 var (
 	ctx            = context.Background()
 	kubeConfigPath = path.Join(workDir, ".kube", "config")
-	subscriptionID = os.Getenv("AZURE_SUBSCRIPTION_ID")
+	subscriptionID = os.Getenv("ARM_SUBSCRIPTION_ID")
 	workDir, _     = os.Getwd()
 )
 
