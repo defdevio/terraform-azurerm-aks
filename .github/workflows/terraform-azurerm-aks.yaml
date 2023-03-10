@@ -40,6 +40,8 @@ jobs:
           output_format: cli
           output_file_path: console
   terraform-docs:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -54,16 +56,13 @@ jobs:
         output-method: inject
         git-push: "true"
   terratest:
-    name: Test terraform module with terratest
     runs-on: ubuntu-latest
     steps:
-    - name: Set up Go 1.x
-      uses: actions/setup-go@v2
+    - uses: actions/setup-go@v2
       with:
         go-version: ^1.20
       id: go
-    - name: Checkout
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - uses: azure/login@v1
