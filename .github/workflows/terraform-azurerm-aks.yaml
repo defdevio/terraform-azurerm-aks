@@ -39,22 +39,6 @@ jobs:
           framework: terraform
           output_format: cli
           output_file_path: console
-  terraform-docs:
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        ref: ${{ github.event.pull_request.head.ref }}
-
-    - name: Render terraform docs inside the README.md and push changes back to PR branch
-      uses: terraform-docs/gh-actions@v1.0.0
-      with:
-        working-dir: .
-        output-file: README.md
-        output-method: inject
-        git-push: "true"
   terratest:
     runs-on: ubuntu-latest
     steps:
@@ -72,3 +56,20 @@ jobs:
       run: |
         export ARM_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}
         go test -v -timeout 30m
+  terraform-docs:
+    needs: ["tflint", "checkov-scan", "terratest"]
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.ref }}
+
+    - name: Render terraform docs inside the README.md and push changes back to PR branch
+      uses: terraform-docs/gh-actions@v1.0.0
+      with:
+        working-dir: .
+        output-file: README.md
+        output-method: inject
+        git-push: "true"
