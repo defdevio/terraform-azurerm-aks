@@ -21,7 +21,7 @@ import (
 var (
 	ctx            = context.Background()
 	kubeConfigPath = path.Join(workDir, ".kube", "config")
-	subscriptionID = os.Getenv("AZURE_SUBSCRIPTION_ID")
+	subscriptionID = os.Getenv("ARM_SUBSCRIPTION_ID")
 	workDir, _     = os.Getwd()
 )
 
@@ -63,12 +63,6 @@ func CreateFile(path string, content string) error {
 	return nil
 }
 
-// Gets the current working directory of the provider.tf file
-func GetProviderPath(t *testing.T) string {
-	providerFilePath := path.Join(workDir, "provider.tf")
-	return providerFilePath
-}
-
 // Creates the required provider file on the system
 func CreateProviderFile(providerFilePath string, t *testing.T) error {
 	providerContent := `
@@ -99,14 +93,21 @@ func TestCreateAKSClusterWithNodePool(t *testing.T) {
 		Vars:         terraformVars(),
 	})
 
-	// Get the path to the provider file
-	providerFile := GetProviderPath(t)
+	testFiles := []string{
+		"provider.tf",
+		"terraform.tfstate",
+		"terraform.tfstate.backup",
+		".terraform.lock.hcl",
+		".terraform",
+		".kube",
+		"config",
+	}
 
-	// Defer deleting the provider file until all test functions have completed
-	defer os.Remove(providerFile)
+	// Defer cleaning up the test files created during the test
+	defer CleanUpTestFiles(t, testFiles)
 
 	// Create the provider file
-	err := CreateProviderFile(providerFile, t)
+	err := CreateProviderFile(path.Join(workDir, "provider.tf"), t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -139,7 +140,7 @@ func TestCreateAKSClusterWithNodePool(t *testing.T) {
 	}
 
 	// This will make a new slice array that contains the keys of the
-	// additional_node_pools map and store them in the nodeKeys slice
+	// additional_node_pools map
 	nodeKeys := make([]string, len(additionalNodePools))
 	i := 0
 	for key := range additionalNodePools {
@@ -167,17 +168,6 @@ func TestCreateAKSClusterWithNodePool(t *testing.T) {
 	if resp.StatusCode == 201 {
 		log.Printf("Created resource group '%s'", *resp.Name)
 	}
-
-	// Defer cleaning up the test files created during the test
-	files := []string{"terraform.tfstate",
-		"terraform.tfstate.backup",
-		".terraform.lock.hcl",
-		".terraform",
-		".kube",
-		"config",
-	}
-
-	defer CleanUpTestFiles(t, files)
 
 	// Defer destroying the terraform resources until the rest of the test functions finish
 	defer terraform.Destroy(t, terraformOptions)
