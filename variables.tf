@@ -96,3 +96,16 @@ variable "vm_size" {
   default     = "Standard_B2ms"
   description = "The VM sku to use for the `default` node pool"
 }
+
+### Telemetry ###
+variable "create_telemetry_law" {
+  type        = bool
+  default     = false
+  description = "When testing this module we create a temporary `Log Analytics Workspace` to verify logs and metrics are working. This variable acts as a flag and should be kept `false` for production usage."
+}
+
+variable "law_resource_id" {
+  type        = string
+  default     = ""
+  description = "The resource id of the `Log Analytics Workspace` where logs and metrics should be sent for long term retention."
+}

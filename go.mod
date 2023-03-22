@@ -3,7 +3,6 @@ module github.com/defdevio/terraform_azurerm_aks
 go 1.20
 
 require (
-	github.com/Azure/azure-sdk-for-go v50.2.0+incompatible
 	github.com/defdevio/terratest-helpers v0.0.9
 	github.com/gruntwork-io/terratest v0.41.15
 	github.com/stretchr/testify v1.8.2
@@ -14,6 +13,7 @@ require (
 	cloud.google.com/go/compute v1.12.1 // indirect
 	cloud.google.com/go/compute/metadata v0.2.1 // indirect
 	cloud.google.com/go/iam v0.7.0 // indirect
+	github.com/Azure/azure-sdk-for-go v50.2.0+incompatible // indirect
 	github.com/emicklei/go-restful/v3 v3.9.0 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect

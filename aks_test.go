@@ -36,12 +36,13 @@ func terraformVars() map[string]any {
 				"vm_size":              "Standard_B2ms",
 			},
 		},
-		"dns_prefix":          "defdevio-test",
-		"environment":         "test",
-		"location":            "westus",
-		"name":                "cluster",
-		"resource_count":      1,
-		"resource_group_name": "test",
+		"dns_prefix":           "defdevio-test",
+		"environment":          "test",
+		"location":             "westus",
+		"name":                 "cluster",
+		"resource_count":       1,
+		"resource_group_name":  "test",
+		"create_telemetry_law": true,
 	}
 
 	return testVars
@@ -168,7 +169,6 @@ func TestCreateAKSClusterWithNodePool(t *testing.T) {
 		for _, node := range nodes.Items {
 			if strings.Contains(node.Name, nodePool) {
 				assert.Equal(t, nodePool, node.ObjectMeta.Labels["kubernetes.azure.com/agentpool"])
-				break
 			}
 		}
 	}
